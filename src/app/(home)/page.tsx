@@ -1,26 +1,60 @@
 "use client";
-import Image from "next/image";
-import Login from "@/app/components/Login";
-import Chat from "@/app/components/Chat";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/firebase";
+import { SET_ACTIVE_USER, REMOVE_ACTIVE_USER } from "@/redux/slice/authSlice";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [isLogin, setLogin] = useState(false);
-  const [userId, setUserId] = useState("");
-  // 1. 페이지가 나뉘어져 있으면 좋겠다.
-  // 2. setLogin 이 부분도 관리하기 어려워 질 수도 있을 듯 -> store로 관리 (새로고침 했을 때 로그인 유지)
-  // 3. 회원가입 (비밀번호 보기, 유효성 검사 onchange 될때)
-  // 4. 로딩
-  // 5. 로그인 화면에서 엔터 눌렀을때 넘어가기
-  // 테일윈드 커스텀 하기
+  const dispatch = useDispatch();
+  const [displayName, setDisplayName] = useState("");
+  const router = useRouter();
 
-  return (
-    <main className="grid bg-white">
-      {isLogin ? (
-        <Chat setLogin={setLogin} userId={userId} />
-      ) : (
-        <Login setLogin={setLogin} setUserId={setUserId} />
-      )}
-    </main>
-  );
+  const getDisplayNameFromEmail = (email: string) => {
+    const u1 = email?.substring(0, email.indexOf("@")) || "";
+    return u1?.charAt(0).toUpperCase() + u1?.slice(1);
+  };
+
+  const handleUserLogin = (user: {
+    displayName: string;
+    email: string;
+    uid: string;
+  }) => {
+    const name = user.displayName || displayName;
+    dispatch(
+      SET_ACTIVE_USER({
+        email: user.email,
+        userName: name,
+        userID: user.uid,
+      })
+    );
+    router.push("/chat");
+  };
+
+  const handleUserLogout = () => {
+    setDisplayName("");
+    dispatch(REMOVE_ACTIVE_USER());
+    router.push("/signin");
+  };
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (!user.displayName) {
+          const name = getDisplayNameFromEmail(user.email as string);
+          setDisplayName(name);
+        } else {
+          setDisplayName(user.displayName);
+        }
+        handleUserLogin(
+          user as { displayName: string; email: string; uid: string }
+        );
+      } else {
+        handleUserLogout();
+      }
+    });
+  }, [dispatch, displayName]);
+
+  return <main className="grid bg-white">메인 페이지~!</main>;
 }
