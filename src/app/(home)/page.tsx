@@ -16,7 +16,7 @@ export default function Home() {
     return u1?.charAt(0).toUpperCase() + u1?.slice(1);
   };
 
-  const handleUserLogin = (user: {
+  const signIn = (user: {
     displayName: string;
     email: string;
     uid: string;
@@ -32,7 +32,7 @@ export default function Home() {
     router.push("/chat");
   };
 
-  const handleUserLogout = () => {
+  const signOut = () => {
     setDisplayName("");
     dispatch(REMOVE_ACTIVE_USER());
     router.push("/signin");
@@ -47,11 +47,9 @@ export default function Home() {
         } else {
           setDisplayName(user.displayName);
         }
-        handleUserLogin(
-          user as { displayName: string; email: string; uid: string }
-        );
+        signIn(user as { displayName: string; email: string; uid: string });
       } else {
-        handleUserLogout();
+        signOut();
       }
     });
   }, [dispatch, displayName]);
