@@ -12,7 +12,7 @@ const ChatClient = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const userName = useSelector(selectUserName);
-  const logout = () => {
+  const signout = () => {
     dispatch(SET_LOADING(true));
     signOut(auth)
       .then(() => {
@@ -39,7 +39,7 @@ const ChatClient = () => {
         <form>
           <button
             type="button"
-            onClick={logout}
+            onClick={signout}
             className="bg-red-600 text-white rounded p-3 hover:bg-red-300 focus:outline-none hover:bg-green-300"
           >
             로그아웃
