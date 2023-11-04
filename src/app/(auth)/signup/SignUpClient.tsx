@@ -3,10 +3,16 @@ import React, { useState } from "react";
 
 import { auth } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  EmailAuthProvider,
+} from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { SET_LOADING } from "@/redux/slice/loadingSlice";
-
+import { validateEmail, checkEmailLength } from "@/utils/validation";
+import { SIGNUP_ERROR_MESSAGES } from "@/errors/errorMessage";
+import { SIGNUP_ERROR_CODE } from "@/errors/errorCode";
 const SignUpClient = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,29 +26,34 @@ const SignUpClient = () => {
   const dispatch = useDispatch();
 
   const createUser = async () => {
-    try {
-      // 공식문서를 따르거나, 이걸 사용한 뚜렷한 이유가 있어야한다.
-      // 백엔드는 then,catch를 선호 (안전하다)
-
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      if (user) {
-        router.push("/signin");
-      }
-    } catch (error) {
-      signUpError(error);
-    }
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(({ user }) => {
+        if (user) {
+          router.push("/signin");
+        }
+      })
+      .catch((error) => {
+        signUpError(error);
+      });
   };
 
   const signUpError = (error: any) => {
-    // 에러문구가 모여있는 파일이 있으면 좋겠다.
-    // 객체로 관리
-    const isAlreadyInUse = error?.code === "auth/email-already-in-use";
+    const isAlreadyInUse = error?.code === SIGNUP_ERROR_CODE.ALREADY_IN_USE;
+    const isInvalidEmail = error?.code === SIGNUP_ERROR_CODE.INVALID_EMAIL;
+    const isOperationNotAllow =
+      error?.code === SIGNUP_ERROR_CODE.OPERATION_NOT_ALLOWED;
+    const isWeakPassword = error?.code === SIGNUP_ERROR_CODE.WEAK_PASSWORD;
     if (isAlreadyInUse) {
-      alert("이미 가입된 이메일입니다.");
+      alert(SIGNUP_ERROR_MESSAGES.ALREADY_IN_USE);
+    }
+    if (isInvalidEmail) {
+      alert(SIGNUP_ERROR_MESSAGES.INVALID_EMAIL);
+    }
+    if (isOperationNotAllow) {
+      alert(SIGNUP_ERROR_MESSAGES.OPERATION_NOT_ALLOWED);
+    }
+    if (isWeakPassword) {
+      alert(SIGNUP_ERROR_MESSAGES.WEAK_PASSWORD);
     }
   };
 
@@ -74,17 +85,15 @@ const SignUpClient = () => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
-  // 정규식 테스트 케이스
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
 
   const checkEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const emailValue = event.target.value;
     setEmail(emailValue);
     if (!validateEmail(emailValue)) {
       setEmailError("유효한 이메일을 입력하세요.");
+      setIsPasswordMatch(false);
+    } else if (!checkEmailLength(emailValue)) {
+      setEmailError("이메일은 255자 이하여야 합니다.");
       setIsPasswordMatch(false);
     } else {
       setEmailError("");
