@@ -38,21 +38,21 @@ export default function Home() {
     router.push("/signin");
   };
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        if (!user.displayName) {
-          const name = getDisplayNameFromEmail(user.email as string);
-          setDisplayName(name);
-        } else {
-          setDisplayName(user.displayName);
-        }
-        signIn(user as { displayName: string; email: string; uid: string });
-      } else {
-        signOut();
-      }
-    });
-  }, [dispatch, displayName]);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       if (!user.displayName) {
+  //         const name = getDisplayNameFromEmail(user.email as string);
+  //         setDisplayName(name);
+  //       } else {
+  //         setDisplayName(user.displayName);
+  //       }
+  //       signIn(user as { displayName: string; email: string; uid: string });
+  //     } else {
+  //       signOut();
+  //     }
+  //   });
+  // }, [dispatch, displayName]);
 
   return <main className="grid bg-white">메인 페이지~!</main>;
 }
