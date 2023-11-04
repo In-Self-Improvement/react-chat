@@ -14,18 +14,6 @@ const ChatClient = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const userName = useSelector(selectUserName);
-  const signout = () => {
-    dispatch(SET_LOADING(true));
-    signOut(auth)
-      .then(() => {
-        // toast.success("로그아웃 되었습니다.");
-        dispatch(SET_LOADING(false));
-        router.push("/signin");
-      })
-      .catch((error) => {
-        // toast.error(error.message);
-      });
-  };
 
   return (
     <div className="flex bg-white">
