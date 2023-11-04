@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  images: {
+    domains: ["www.google.com", "img1.daumcdn.net"],
+  },
+  compiler: {
+    styledComponents: true,
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

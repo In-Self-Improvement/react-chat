@@ -21,8 +21,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Loader />
-          {children}
+
           <AuthRedirect />
+          {children}
         </Providers>
       </body>
     </html>
