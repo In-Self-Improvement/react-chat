@@ -18,18 +18,12 @@ const ChatClient = () => {
       .then(() => {
         // toast.success("로그아웃 되었습니다.");
         dispatch(SET_LOADING(false));
-        router.push("/");
+        router.push("/signin");
       })
       .catch((error) => {
         // toast.error(error.message);
       });
   };
-
-  useEffect(() => {
-    if (!userName) {
-      router.push("/");
-    }
-  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

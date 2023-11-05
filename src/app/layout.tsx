@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/redux/provider";
 import Loader from "@/components/loader/Loader";
+import AuthRedirect from "@/app/(auth)/authredirect/AuthRedirect";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
         <Providers>
           <Loader />
           {children}
+          <AuthRedirect />
         </Providers>
       </body>
     </html>
