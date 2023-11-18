@@ -13,6 +13,7 @@ const AuthRedirect = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("로그인 중입니당~");
+        router.push("/chat");
       } else if (
         pathname !== "/signin" &&
         pathname !== "/signup" &&
